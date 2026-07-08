@@ -10,11 +10,11 @@ Target repository: `apache/superset`, copied or forked into your GitHub account.
 
 Workflow problem: high-volume maintenance work accumulates because each issue is too small to schedule but too nuanced for a simple bot. Superset is a good proof point because it has Python, TypeScript, test, security, and dependency surfaces. This automation routes scoped findings to Devin when they are safe, measurable, and reviewable.
 
-Seeded Superset issues live in [issues/superset-remediation-plan.json](issues/superset-remediation-plan.json):
+Seeded Superset issues live in [issues/superset-remediation-plan.json](issues/superset-remediation-plan.json) and are published on the fork at [Ritwik-Gaur/superset](https://github.com/Ritwik-Gaur/superset/issues):
 
-- Replace `shell=True` in the release test helper.
-- Move report scheduling hot paths away from deprecated `datetime.utcnow()`.
-- Implement the TODO'd `q` filter in `ExtensionsRestApi.get_list`.
+- [#1](https://github.com/Ritwik-Gaur/superset/issues/1) Replace `shell=True` in the release test helper.
+- [#2](https://github.com/Ritwik-Gaur/superset/issues/2) Move report scheduling hot paths away from deprecated `datetime.utcnow()`.
+- [#3](https://github.com/Ritwik-Gaur/superset/issues/3) Implement the TODO'd `q` filter in `ExtensionsRestApi.get_list`.
 
 ## Architecture
 

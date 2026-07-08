@@ -1,84 +1,57 @@
 # Submission Checklist
 
-## 1. Repair GitHub Auth
+## Done
 
-`gh` is installed but the saved token is currently invalid. Re-authenticate before publishing:
+- [x] Solution repository published: <https://github.com/Ritwik-Gaur/devin-superset-remediator>
+- [x] Superset fork created with Issues enabled: <https://github.com/Ritwik-Gaur/superset>
+- [x] Seeded remediation issues published, each labeled `devin-remediate`:
+  - [#1 Replace shell=True in BashMock release test helper](https://github.com/Ritwik-Gaur/superset/issues/1)
+  - [#2 Remove deprecated datetime.utcnow from report scheduling hot paths](https://github.com/Ritwik-Gaur/superset/issues/2)
+  - [#3 Implement q filtering for ExtensionsRestApi.get_list](https://github.com/Ritwik-Gaur/superset/issues/3)
+- [x] Tests pass, Docker image builds, dry-run demo verified end to end.
 
-```bash
-gh auth login -h github.com
-gh auth status
-```
+## Remaining
 
-## 2. Publish The Solution Repository
+### 1. Get Devin credentials
 
-From `/Users/ritwikgaur/cognition-test`:
+In the Devin app, create a service-user API key (`cog_...`) and copy your org ID
+(`org-...`). Put both in `.env` (already scaffolded at the repo root).
 
-```bash
-gh repo create Ritwik-Gaur/devin-superset-remediator \
-  --public \
-  --source=. \
-  --remote=origin \
-  --push \
-  --description "Event-driven Devin automation for Apache Superset remediation"
-```
+### 2. Give Devin access to the fork
 
-## 3. Fork Superset And Create Issues
+In Devin's GitHub integration settings, grant access to `Ritwik-Gaur/superset`.
+Devin cannot open PRs against a repo it cannot see — verify this before the live run.
 
-```bash
-gh repo fork apache/superset --org Ritwik-Gaur --remote=false
-export TARGET_REPOSITORY=Ritwik-Gaur/superset
-export GITHUB_TOKEN=ghp_...
-make publish-issues
-```
-
-If the GitHub fork already exists, skip `gh repo fork` and only run `make publish-issues`.
-
-## 4. Run Live Devin Mode
-
-```bash
-cp .env.example .env
-```
-
-Edit `.env`:
-
-```bash
-DEVIN_API_KEY=cog_...
-DEVIN_ORG_ID=org-...
-DEVIN_REPO=Ritwik-Gaur/superset
-TARGET_REPOSITORY=Ritwik-Gaur/superset
-GITHUB_TOKEN=ghp_...
-DEVIN_DRY_RUN=false
-```
-
-Then:
+### 3. Run live mode
 
 ```bash
 docker compose up --build
 ```
 
-Label one of the seeded Superset issues with `devin-remediate`, or run:
+Then either rely on the already-labeled issues via `POST /simulate`, or exercise the
+webhook path by re-labeling an issue (requires a public URL for the webhook), and watch:
 
-```bash
-make simulate
-```
+- Dashboard: <http://localhost:8080>
+- Metrics: <http://localhost:8080/metrics>
+- Devin session URLs appear per work item; PR URLs attach when Devin finishes.
 
-## 5. Loom Flow
+Real sessions take 10–30+ minutes each. If a session shows `waiting_for_approval`,
+open its session URL and approve the plan.
 
-Use [docs/LOOM_SCRIPT.md](LOOM_SCRIPT.md). The punchline sequence:
+### 4. Record the Loom
+
+Follow [docs/LOOM_SCRIPT.md](LOOM_SCRIPT.md). Punchline sequence:
 
 1. Show the three Superset issues.
 2. Trigger the event.
-3. Show the Devin session URL.
-4. Show the PR URL.
-5. Show `/metrics` and dashboard success rate.
+3. Show a live Devin session.
+4. Show the PR(s) Devin opened.
+5. Show the dashboard and `/metrics`.
 6. Explain how this scales to security, dependency, and quality backlogs.
 
-## 6. Submit
+### 5. Submit
 
-Submit:
-
-- Solution repo URL.
-- Superset fork URL with seeded issues.
+- Solution repo: <https://github.com/Ritwik-Gaur/devin-superset-remediator>
+- Superset fork: <https://github.com/Ritwik-Gaur/superset>
 - Loom URL.
-- Note that the service supports dry-run and live Devin mode.
-
+- Note that the service supports both dry-run (no credentials) and live Devin mode.
