@@ -1,0 +1,18 @@
+{
+  "repository": "Ritwik-Gaur/superset",
+  "findings": [
+    {
+      "id": "SEC-001-shell-true-bash-mock",
+      "source": "sample_scan",
+      "repository": "Ritwik-Gaur/superset",
+      "severity": "medium",
+      "title": "Replace shell=True in BashMock release test helper",
+      "body": "Static analysis flags the release test helper for invoking a constructed shell command with shell=True.",
+      "labels": ["devin-remediate", "security", "python"],
+      "files": ["tests/unit_tests/fixtures/bash_mock.py"],
+      "acceptance_criteria": ["Remove shell=True and preserve dry-run behavior."],
+      "verification_commands": ["python -m pytest tests/unit_tests/fixtures -q"]
+    }
+  ]
+}
+

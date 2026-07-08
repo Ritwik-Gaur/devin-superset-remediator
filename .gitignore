@@ -1,0 +1,14 @@
+.DS_Store
+.env
+.data/
+*.db
+*.sqlite
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+superset-fork/
+dist/
+build/
+

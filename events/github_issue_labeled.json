@@ -1,0 +1,18 @@
+{
+  "action": "labeled",
+  "repository": {
+    "full_name": "Ritwik-Gaur/superset"
+  },
+  "issue": {
+    "number": 1,
+    "html_url": "https://github.com/Ritwik-Gaur/superset/issues/1",
+    "title": "Replace shell=True in BashMock release test helper",
+    "body": "Static analysis flags tests/unit_tests/fixtures/bash_mock.py for invoking a constructed shell command with shell=True.",
+    "labels": [
+      {"name": "devin-remediate"},
+      {"name": "security"},
+      {"name": "medium"}
+    ]
+  }
+}
+

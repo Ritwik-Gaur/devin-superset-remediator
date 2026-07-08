@@ -1,0 +1,65 @@
+{
+  "repository": "Ritwik-Gaur/superset",
+  "source_repository": "apache/superset",
+  "source_commit": "0efcd54",
+  "findings": [
+    {
+      "id": "SEC-001-shell-true-bash-mock",
+      "source": "seed_plan",
+      "severity": "medium",
+      "title": "Replace shell=True in BashMock release test helper",
+      "body": "Static analysis flags tests/unit_tests/fixtures/bash_mock.py for invoking a constructed shell command with shell=True. The helper can pass argv directly to subprocess.run and preserve dry-run behavior.",
+      "labels": ["devin-remediate", "security", "python"],
+      "files": ["tests/unit_tests/fixtures/bash_mock.py"],
+      "acceptance_criteria": [
+        "Remove shell=True from BashMock.tag_latest_release.",
+        "Pass tag_latest_release.sh arguments as an argv list.",
+        "Keep TEST_ENV behavior and existing return semantics."
+      ],
+      "verification_commands": [
+        "python -m pytest tests/unit_tests/fixtures -q",
+        "python -m pytest tests/unit_tests -k tag_latest_release -q"
+      ]
+    },
+    {
+      "id": "PY312-001-report-utcnow",
+      "source": "seed_plan",
+      "severity": "medium",
+      "title": "Remove deprecated datetime.utcnow from report scheduling hot paths",
+      "body": "Superset declares Python 3.12 support. datetime.utcnow() is deprecated and report scheduling has many direct call sites. Remediate the report execution/pruning hot path with a UTC clock helper while preserving naive UTC values where existing SQLAlchemy models expect them.",
+      "labels": ["devin-remediate", "python-3.12", "code-quality"],
+      "files": [
+        "superset/commands/report/execute.py",
+        "superset/commands/report/log_prune.py",
+        "tests/unit_tests/commands/report/execute_test.py"
+      ],
+      "acceptance_criteria": [
+        "Replace direct datetime.utcnow calls in the scoped report command files.",
+        "Preserve naive UTC values where existing SQLAlchemy models expect them.",
+        "Add or update focused tests for the clock helper behavior."
+      ],
+      "verification_commands": [
+        "python -m pytest tests/unit_tests/commands/report -q",
+        "python -m pytest tests/unit_tests/commands/logs -q"
+      ]
+    },
+    {
+      "id": "API-001-extensions-q-filter",
+      "source": "seed_plan",
+      "severity": "low",
+      "title": "Implement q filtering for ExtensionsRestApi.get_list",
+      "body": "ExtensionsRestApi.get_list has a TODO for supporting the FAB q parameter but currently returns every extension. Implement a minimal, documented filter path and tests so clients can query by publisher/name without client-side scanning.",
+      "labels": ["devin-remediate", "api", "code-quality"],
+      "files": ["superset/extensions/api.py"],
+      "acceptance_criteria": [
+        "Parse q safely using Superset/FAB conventions already used by APIs.",
+        "Support filtering by extension publisher and name.",
+        "Add unit tests covering unfiltered, filtered, and invalid q behavior."
+      ],
+      "verification_commands": [
+        "python -m pytest tests/unit_tests/extensions -q"
+      ]
+    }
+  ]
+}
+
