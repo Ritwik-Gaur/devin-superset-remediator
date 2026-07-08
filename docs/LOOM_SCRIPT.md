@@ -62,21 +62,29 @@ Devin session link.
 
 ## 1:45 — Architecture  (Tab 3: solution repo README)
 
-**DO:** Switch to Tab 3, scrolled to the architecture diagram. Trace the flow with your cursor
-as you talk: scanner/issue → webhook → queue → orchestrator → Devin → PRs.
+**DO:** Switch to Tab 3, scrolled to the architecture diagram. The diagram reads left to
+right — you'll point at one box per line below. Short sentences, conversational; pause
+between them.
 
-**SAY:**
-> "Here's the shape of the system. The key decision: Devin is the execution primitive, not
-> a helper call. My service is a thin control plane — it owns intake, dedup, a SQLite work
-> queue, a concurrency cap, and session lifecycle. Devin owns everything that needs
-> engineering judgment: investigating the repo, writing the patch, running the tests,
-> opening the PR.
->
-> Each session gets a scoped prompt with the issue's acceptance criteria and verification
-> commands, an ACU budget cap, and a structured output schema — so Devin reports back
-> machine-readable results: what changed, what was verified, and the PR URL. The
-> orchestrator polls session state and maps every terminal state, including quota
-> suspensions, to a status a human can act on."
+**SAY** (pointing at the **scanner/issue box** on the left):
+> "So what did I actually build? One design rule: Devin does the engineering, my code just
+> runs the assembly line."
+
+**SAY** (sliding your cursor from **webhook** to the **queue**):
+> "An event comes in, gets deduped into a queue. Boring, reliable plumbing — on purpose."
+
+**SAY** (pointing at the **orchestrator box**):
+> "The orchestrator picks it up and writes Devin a work order. Here's the issue. Here's
+> what 'done' means. Here are the tests to run. And here's your budget."
+
+**SAY** (pointing at the **Devin box**):
+> "Devin does everything that needs actual judgment — reads the code, writes the fix, runs
+> the tests, opens the PR."
+
+**SAY** (sliding back to the **dashboard box**):
+> "And it has to answer in a fixed format, so my code can tell — without a human reading
+> anything — did it succeed, fail, or get stuck. That's the difference between an
+> unattended system and a chatbot."
 
 ## 2:45 — The results  (Tab 5: Devin session → Tab 4: PR #5)
 
