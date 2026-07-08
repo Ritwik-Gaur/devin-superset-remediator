@@ -96,6 +96,12 @@ Create a GitHub webhook on your Superset fork:
 
 The automation starts only when an issue has the `devin-remediate` label. That makes it safe to run in a real engineering org because humans can gate scope by labeling.
 
+For local demos without a public webhook URL, replay a real issue as the identical webhook payload:
+
+```bash
+python3 scripts/trigger_issue.py 3   # fetches issue #3 via gh and delivers the `labeled` event
+```
+
 ## Observable Outputs
 
 - Dashboard: `http://localhost:8080`
@@ -115,9 +121,21 @@ Metrics answer the VP Eng question:
 
 Dependabot and static scanners can identify work, but they cannot reliably navigate a large mixed Python/TypeScript codebase, understand local conventions, run targeted tests, adjust the patch, and open a coherent PR. Devin can. This service turns that ability into an operational system: events in, autonomous code remediation out, with observable progress and human review points.
 
-## Submission Assets
+## Results
+
+This system ran live against the fork on 2026-07-07. Every seeded issue was remediated by
+an autonomous Devin session, end to end, with the full trace visible on each issue
+(remediation started → session link → remediation completed → PR link):
+
+| Issue | Devin's pull request | Scope of change |
+| --- | --- | --- |
+| [#1 Replace `shell=True` in BashMock](https://github.com/Ritwik-Gaur/superset/issues/1) | [PR #4](https://github.com/Ritwik-Gaur/superset/pull/4) | argv list + corrected lint suppression + updated test assertion |
+| [#2 Remove deprecated `datetime.utcnow`](https://github.com/Ritwik-Gaur/superset/issues/2) | [PR #5](https://github.com/Ritwik-Gaur/superset/pull/5) | 22 call sites migrated across exactly the 3 scoped files |
+| [#3 Implement `q` filtering for ExtensionsRestApi](https://github.com/Ritwik-Gaur/superset/issues/3) | [PR #6](https://github.com/Ritwik-Gaur/superset/pull/6) | filter implementation + new unit test file |
+
+Final metrics from the run: 3/3 work items succeeded, success rate 1.0, 3 pull requests.
+
+## Additional Docs
 
 - Architecture and tradeoffs: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
-- 5-minute Loom script: [docs/LOOM_SCRIPT.md](docs/LOOM_SCRIPT.md)
-- Submission checklist: [docs/SUBMISSION_CHECKLIST.md](docs/SUBMISSION_CHECKLIST.md)
 - Superset issue plan: [issues/superset-remediation-plan.json](issues/superset-remediation-plan.json)
