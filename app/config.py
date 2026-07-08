@@ -39,8 +39,6 @@ class Config:
     @classmethod
     def from_env(cls) -> "Config":
         devin_api_key = os.getenv("DEVIN_API_KEY") or None
-        explicit_dry_run = os.getenv("DEVIN_DRY_RUN")
-        dry_run_default = not bool(devin_api_key)
         max_acu = os.getenv("DEVIN_MAX_ACU_LIMIT")
         return cls(
             app_host=os.getenv("APP_HOST", "127.0.0.1"),
@@ -52,9 +50,7 @@ class Config:
             devin_org_id=os.getenv("DEVIN_ORG_ID") or None,
             devin_base_url=os.getenv("DEVIN_BASE_URL", "https://api.devin.ai/v3"),
             devin_repo=os.getenv("DEVIN_REPO") or os.getenv("TARGET_REPOSITORY"),
-            devin_dry_run=_bool_env("DEVIN_DRY_RUN", dry_run_default)
-            if explicit_dry_run is not None
-            else dry_run_default,
+            devin_dry_run=_bool_env("DEVIN_DRY_RUN", not devin_api_key),
             devin_poll_seconds=_int_env("DEVIN_POLL_SECONDS", 20),
             devin_max_acu_limit=int(max_acu) if max_acu else None,
             github_token=os.getenv("GITHUB_TOKEN") or None,

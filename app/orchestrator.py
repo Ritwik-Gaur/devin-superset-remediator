@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from app.config import Config
-from app.devin import DevinAPIError, DevinClient
+from app.devin import DevinClient
 from app.github import GitHubClient
 from app.models import IssueFinding, WorkItem, utc_now
 from app.storage import Store
@@ -73,7 +73,7 @@ class Orchestrator:
                 ),
             )
             return updated
-        except (DevinAPIError, Exception) as exc:
+        except Exception as exc:
             failed = self.store.update_item(
                 item.id,
                 status="failed",
@@ -108,24 +108,22 @@ class Orchestrator:
             }
             if status == "error":
                 fields.update(status="failed", error="Devin session entered error state", completed_at=utc_now())
-            elif status == "suspended" and status_detail in {
-                "out_of_credits",
-                "out_of_quota",
-                "no_quota_allocation",
-                "payment_declined",
-                "org_usage_limit_exceeded",
-                "total_session_limit_exceeded",
-                "error",
-            }:
-                fields.update(status="blocked", error=f"Session suspended: {status_detail}", completed_at=utc_now())
             elif status == "exit" or status_detail == "finished":
                 fields.update(status="succeeded", completed_at=utc_now())
+            elif status == "suspended":
+                # Suspension is terminal for the conveyor: quota/billing suspensions are
+                # blocked, and an idle/user suspension counts as success only if the
+                # session already produced a PR. Humans can resume via the session URL.
+                if status_detail in {"inactivity", "user_request"} and (pr_urls or item.pr_urls):
+                    fields.update(status="succeeded", completed_at=utc_now())
+                else:
+                    fields.update(status="blocked", error=f"Session suspended: {status_detail}", completed_at=utc_now())
 
             updated = self.store.update_item(item.id, **fields)
             if updated.status == "succeeded":
                 self._announce_completion(updated)
             return updated
-        except (DevinAPIError, Exception) as exc:
+        except Exception as exc:
             self.store.add_audit(item.id, "devin_poll_failed", str(exc), {})
             return self.store.update_item(item.id, status_detail="poll_failed", error=str(exc))
 
